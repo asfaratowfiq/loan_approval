@@ -3,7 +3,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 COPY . .
-RUN pip install --no-cache-dir fastapi streamlit uvicorn pandas scikit-learn xgboost pyyaml
+RUN pip install --no-cache-dir fastapi streamlit uvicorn pandas scikit-learn xgboost pyyaml fairlearn imbalanced-learn
 
 EXPOSE 8000
 EXPOSE 8501
