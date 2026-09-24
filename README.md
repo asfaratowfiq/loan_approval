@@ -1,4 +1,4 @@
-## My Azure
+## Azure Commands
 bash
 # 0. Make sure you're in Bash, not PowerShell
 bash
