@@ -1,19 +1,19 @@
 from __future__ import annotations
 
-import pickle
-from pathlib import Path
+import os
 
 try:
     from fastapi import FastAPI
 except ImportError:  # pragma: no cover - optional dependency guard
     FastAPI = None
 
-import pandas as pd
+import requests
 from pydantic import BaseModel
 
 from pipeline import run_training_pipeline
-from src.utils.config_loader import load_config
-from src.utils.paths import find_project_root
+
+ML_ENDPOINT_URL = os.environ.get("ML_ENDPOINT_URL")
+ML_ENDPOINT_KEY = os.environ.get("ML_ENDPOINT_KEY")
 
 
 class LoanApplication(BaseModel):
@@ -34,25 +34,6 @@ class LoanApplication(BaseModel):
     high_cltv_flag: int
 
 
-def _latest_model_path(project_root: Path, models_dir: str) -> Path:
-    """Find the most recently saved model artifact."""
-    model_dir = project_root / models_dir
-    candidates = sorted(model_dir.glob("*.pkl"), key=lambda p: p.stat().st_mtime, reverse=True)
-    if not candidates:
-        raise FileNotFoundError(
-            f"No model artifact found in {model_dir}. Run /pipeline first to train and save a model."
-        )
-    return candidates[0]
-
-
-def _load_fair_model():
-    project_root = find_project_root()
-    config = load_config()
-    model_path = _latest_model_path(project_root, config["paths"]["models"])
-    with model_path.open("rb") as handle:
-        return pickle.load(handle)
-
-
 def create_app() -> "FastAPI":
     """Create the FastAPI application instance."""
     if FastAPI is None:
@@ -70,21 +51,33 @@ def create_app() -> "FastAPI":
 
     @app.post("/predict")
     def predict(application: LoanApplication) -> dict:
-        fair_model = _load_fair_model()
+        if not ML_ENDPOINT_URL or not ML_ENDPOINT_KEY:
+            return {"error": "ML_ENDPOINT_URL and ML_ENDPOINT_KEY environment variables must be set."}
 
-        row = pd.DataFrame([application.model_dump()])
-        sensitive_features = row["applicant_age"].astype(str)
-
-        prediction = fair_model.predict(row, sensitive_features=sensitive_features, random_state=42)
-        probability = fair_model.predict_proba(row)[:, 1]
-
-        decision = "approved" if int(prediction[0]) == 1 else "denied"
-
-        return {
-            "decision": decision,
-            "approval_probability": float(probability[0]),
-            "fairness_strategy": fair_model.fairness_strategy,
+        data_dict = application.model_dump()
+        payload = {
+            "input_data": {
+                "columns": list(data_dict.keys()),
+                "data": [list(data_dict.values())],
+            }
+        }
+        headers = {
+            "Authorization": f"Bearer {ML_ENDPOINT_KEY}",
+            "Content-Type": "application/json",
         }
 
+        response = requests.post(ML_ENDPOINT_URL, json=payload, headers=headers, timeout=30)
+
+        if response.status_code != 200:
+            return {"error": response.text, "status_code": response.status_code}
+
+        result = response.json()
+        prediction = result[0] if isinstance(result, list) else result
+        decision = "approved" if int(prediction) == 1 else "denied"
+
+        return {"decision": decision}
+
     return app
+
+
 app = create_app() if FastAPI is not None else None
