@@ -1,3 +1,43 @@
+## My Azure
+bash
+# 0. Make sure you're in Bash, not PowerShell
+bash
+
+# 1. Clone the repo
+git clone https://github.com/asfaratowfiq/loan_approval.git
+cd loan_approval
+
+# 2. Confirm required files exist
+ls models/ reports/
+
+# 3. Confirm correct Azure subscription
+az account show
+# if wrong subscription:
+# az account set --subscription "c3d7d280-955f-4da3-ad72-3ea1608f4fea"
+
+# 4. Create and activate a clean virtual environment
+python3 -m venv venv
+source venv/bin/activate
+which python3   # should show .../loan_approval/venv/bin/python3
+
+# 5. Install everything with known-compatible versions
+pip install --upgrade pip
+pip install "setuptools<81"
+pip install "mlflow==2.15.1" "mlflow-skinny==2.15.1" azureml-mlflow \
+  azure-ai-ml azure-identity "scikit-learn==1.3.2" xgboost fairlearn
+
+# 6. Verify key versions before running
+pip show mlflow
+pip show scikit-learn
+python3 -c "import pkg_resources; print('ok')"
+
+# 7. Create the registration script
+nano register_model.py
+# (paste script content — see below)
+
+# 8. Run it
+python3 register_model.py
+
 # AI-Powered Mortgage Underwriting Assistant
 
 An ML-based decision support system for mortgage underwriting using HMDA data.
