@@ -29,7 +29,6 @@ conda_env = {
         "pip",
         {
             "pip": [
-                "setuptools<81",
                 "mlflow==2.15.1",
                 "mlflow-skinny==2.15.1",
                 "cloudpickle==3.1.2",
@@ -38,14 +37,12 @@ conda_env = {
                 "fairlearn==0.13.0",
                 "numpy==1.26.4",
                 "pandas==2.3.3",
-                "scipy",
-                "inference-schema[numpy-support]==1.5.0",
-                "azureml-defaults",
-                "azureml-inference-server-http==0.8.4",
-                "azureml-ai-monitoring",
-                "azureml-contrib-services",
-                "azureml-monitoring",
-                "applicationinsights",
+                "scipy==1.15.3",
+                "azureml-defaults==1.0.45",
+                "azureml-inference-server-http==1.3.3",
+                "azureml-ai-monitoring==1.0.0",
+                "azureml-contrib-services==1.62.0",
+                "applicationinsights==0.11.10",
             ]
         },
     ],
