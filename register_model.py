@@ -7,7 +7,7 @@ with open("models/loan_model.pkl", "rb") as f:
 
 mlflow.set_tracking_uri(
     "azureml://eastus.api.azureml.ms/mlflow/v1.0/subscriptions/c3d7d280-955f-4da3-ad72-3ea1608f4fea/"
-    "resourceGroups/loan-approval-rg/providers/Microsoft.MachineLearningServices/workspaces/loan-approval-ws"
+    "resourceGroups/Mortgage_application/providers/Microsoft.MachineLearningServices/workspaces/mortgageML"
 )
 
 metrics = {
