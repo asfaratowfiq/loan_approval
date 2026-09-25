@@ -29,6 +29,7 @@ conda_env = {
         "pip",
         {
             "pip": [
+                "setuptools<81",
                 "mlflow==2.15.1",
                 "mlflow-skinny==2.15.1",
                 "scikit-learn==1.3.2",
@@ -39,6 +40,7 @@ conda_env = {
                 "cloudpickle==3.1.2",
                 "inference-schema==1.5.0",
                 "azureml-inference-server-http==0.8.4",
+                "azureml-ai-monitoring",
             ]
         },
     ],
