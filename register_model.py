@@ -23,7 +23,7 @@ metrics = {
 }
 
 conda_env = {
-    "channels": ["conda-forge"],
+    "channels": ["conda-forge", "defaults"],
     "dependencies": [
         "python=3.10",
         "pip",
@@ -32,15 +32,20 @@ conda_env = {
                 "setuptools<81",
                 "mlflow==2.15.1",
                 "mlflow-skinny==2.15.1",
+                "cloudpickle==3.1.2",
                 "scikit-learn==1.3.2",
                 "xgboost==2.1.4",
                 "fairlearn==0.13.0",
                 "numpy==1.26.4",
                 "pandas==2.3.3",
-                "cloudpickle==3.1.2",
-                "inference-schema==1.5.0",
+                "scipy",
+                "inference-schema[numpy-support]==1.5.0",
+                "azureml-defaults",
                 "azureml-inference-server-http==0.8.4",
                 "azureml-ai-monitoring",
+                "azureml-contrib-services",
+                "azureml-monitoring",
+                "applicationinsights",
             ]
         },
     ],
