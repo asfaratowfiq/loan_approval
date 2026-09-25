@@ -22,6 +22,29 @@ metrics = {
     "false_rejection_rate": 0.00488171235448742,
 }
 
+conda_env = {
+    "channels": ["conda-forge"],
+    "dependencies": [
+        "python=3.10",
+        "pip",
+        {
+            "pip": [
+                "mlflow==2.15.1",
+                "mlflow-skinny==2.15.1",
+                "scikit-learn==1.3.2",
+                "xgboost==2.1.4",
+                "fairlearn==0.13.0",
+                "numpy==1.26.4",
+                "pandas==2.3.3",
+                "cloudpickle==3.1.2",
+                "inference-schema==1.5.0",
+                "azureml-inference-server-http==0.8.4",
+            ]
+        },
+    ],
+    "name": "loan-model-env",
+}
+
 with mlflow.start_run(run_name="loan_model_fairlearn_equalized_odds") as run:
     for name, value in metrics.items():
         mlflow.log_metric(name, value)
@@ -34,7 +57,7 @@ with mlflow.start_run(run_name="loan_model_fairlearn_equalized_odds") as run:
     )
     mlflow.log_artifact("reports/pipeline_report.json")
 
-    mlflow.sklearn.log_model(model, artifact_path="model")
+    mlflow.sklearn.log_model(model, artifact_path="model", conda_env=conda_env)
     run_id = run.info.run_id
 
 result = mlflow.register_model(model_uri=f"runs:/{run_id}/model", name="loan-model")
